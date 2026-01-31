@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  vibevoice-vllm:
+    image: vllm/vllm-openai:latest
+    container_name: vibevoice-vllm
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    ipc: host
+    ports:
+      - "8000:8000"
+    environment:
+      - VIBEVOICE_FFMPEG_MAX_CONCURRENCY=64
+      - PYTORCH_ALLOC_CONF=expandable_segments:True
+    volumes:
+      - .:/app
+      - ~/.cache/huggingface_hub:/root/.cache/huggingface_hub
+    working_dir: /app
+    entrypoint: ["/bin/bash", "-c"]
+    command: ["python3 /app/vllm_plugin/scripts/start_server.py"]
