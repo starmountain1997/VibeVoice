@@ -2,7 +2,10 @@ version: '3.8'
 
 services:
   vibevoice-vllm:
-    image: vllm/vllm-openai:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vibevoice-vllm:latest
     container_name: vibevoice-vllm
     runtime: nvidia
     deploy:
@@ -20,7 +23,7 @@ services:
       - PYTORCH_ALLOC_CONF=expandable_segments:True
     volumes:
       - .:/app
-      - ~/.cache/huggingface_hub:/root/.cache/huggingface_hub
+      - ~/.cache/huggingface/hub:/weights
     working_dir: /app
     entrypoint: ["/bin/bash", "-c"]
     command: ["python3 /app/vllm_plugin/scripts/start_server.py"]
